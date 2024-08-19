@@ -1,33 +1,32 @@
 from fastapi import FastAPI, HTTPException
-import pickle
 from pydantic import BaseModel
+import pickle
 import numpy as np
-import os
 
 app = FastAPI()
 
-# Tente carregar o modelo e capture possíveis exceções
-model_path = "modelo_clf.sav"
+# Carregando o modelo na inicialização do servidor
+with open("modelo_clf.sav", "rb") as model_file:
+    model = pickle.load(model_file)
 
-if not os.path.exists(model_path):
-    raise RuntimeError(f"O arquivo de modelo {model_path} não foi encontrado.")
-
-try:
-    with open(model_path, "rb") as model_file:
-        model = pickle.load(model_file)
-        if not hasattr(model, "predict"):
-            raise RuntimeError("O objeto carregado não é um modelo válido.")
-except Exception as e:
-    raise RuntimeError(f"Erro ao carregar o modelo: {e}")
-
-class PredictRequest(BaseModel):
-    features: list
+# Definição do modelo de dados esperado
+class InputData(BaseModel):
+    input: list
 
 @app.post("/predict")
-async def predict(request: PredictRequest):
+async def predict(data: InputData):
     try:
-        input_data = np.array(request.features).reshape(1, -1)
+        # Convertendo a lista para numpy array e ajustando o formato
+        input_data = np.array(data.input).reshape(1, 64)  # Para uma imagem de 8x8
+        
+        # Fazendo a predição
         prediction = model.predict(input_data)
-        return {"prediction": int(prediction[0])}
+        
+        return {"prediction": prediction.tolist()}
+    
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao fazer a previsão: {e}")
+        return {"error": str(e)}
+
+@app.get("/")
+async def root():
+    return {"message": "Conexão recebida com sucesso"}

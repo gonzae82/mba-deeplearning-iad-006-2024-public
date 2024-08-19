@@ -17,7 +17,7 @@ COPY . /app/
 COPY notebooks/modelo_clf.sav /app/modelo_clf.sav
 
 # Expose the port
-EXPOSE 8000
+EXPOSE 3000
 
 # Run the command to start the development server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3000"]
