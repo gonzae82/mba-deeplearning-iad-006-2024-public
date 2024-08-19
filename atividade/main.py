@@ -27,6 +27,7 @@ async def predict(data: InputData):
     except Exception as e:
         return {"error": str(e)}
 
+# Valida se a API está funcionando corretamente
 @app.get("/")
 async def root():
     return {"message": "Conexão recebida com sucesso"}

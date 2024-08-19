@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 #Copiar o modelo para dentro do container
-COPY notebooks/modelo_clf.sav /app/modelo_clf.sav
+COPY modelo_clf.sav /app/modelo_clf.sav
 
 # Expose the port
 EXPOSE 3000
